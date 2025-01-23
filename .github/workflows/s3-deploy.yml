@@ -1,40 +1,40 @@
-name: Deploy to S3
+# name: Deploy to S3
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types:
-      - closed
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     types:
+#       - closed
+#     branches:
+#       - main
 
-permissions:
-  id-token: write
-  contents: read
+# permissions:
+#   id-token: write
+#   contents: read
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    # Only run if the PR is merged or if it's a direct push to main
-    if: github.event.pull_request.merged == true || github.event_name == 'push'
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     # Only run if the PR is merged or if it's a direct push to main
+#     if: github.event.pull_request.merged == true || github.event_name == 'push'
     
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: us-east-1
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+#           aws-region: us-east-1
 
-      - name: Deploy to S3
-        run: |
-          aws s3 sync . s3://www.birajtiwari.com/ \
-            --delete \
-            --exclude ".git/*" \
-            --exclude ".github/*" \
-            --exclude "README.md" \
-            --cache-control "max-age=86400"
+#       - name: Deploy to S3
+#         run: |
+#           aws s3 sync . s3://www.birajtiwari.com/ \
+#             --delete \
+#             --exclude ".git/*" \
+#             --exclude ".github/*" \
+#             --exclude "README.md" \
+#             --cache-control "max-age=86400"
