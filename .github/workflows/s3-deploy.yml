@@ -49,6 +49,7 @@ jobs:
             --exclude ".git/*" \
             --exclude ".github/*" \
             --exclude "README.md" \
+            --exclude "*.yml"
             --exclude "s3-bucket-setup.yml" \
             --cache-control "max-age=86400"
 
