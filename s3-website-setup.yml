@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'S3 Website Hosting for birajtiwari.com'
+
+Resources:
+  # S3 Bucket
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: www.birajtiwari.com
+      WebsiteConfiguration:
+        IndexDocument: ui/index.html
+        ErrorDocument: ui/index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  # Bucket Policy for Public Access
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebsiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub '${WebsiteBucket.Arn}/*'
+
+  # Route 53 Hosted Zone
+  HostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: birajtiwari.com
+
+  # DNS Record for www subdomain
+  WwwDNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: www.birajtiwari.com
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt WebsiteBucket.WebsiteURL
+        HostedZoneId: !GetAtt WebsiteBucket.RegionalDomainName
+        EvaluateTargetHealth: false
+
+  # DNS Record for apex domain
+  ApexDNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: birajtiwari.com
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt WebsiteBucket.WebsiteURL
+        HostedZoneId: !GetAtt WebsiteBucket.RegionalDomainName
+        EvaluateTargetHealth: false
+
+Outputs:
+  WebsiteURL:
+    Description: 'S3 Website URL'
+    Value: !GetAtt WebsiteBucket.WebsiteURL
+  
+  NameServers:
+    Description: 'Name Servers for the domain'
+    Value: !Join [',', !GetAtt HostedZone.NameServers]

@@ -1,0 +1,57 @@
+# AWSTemplateFormatVersion: '2010-09-09'
+# Description: 'DNS Setup for S3 Website Hosting'
+
+# Parameters:
+#   DomainName:
+#     Type: String
+#     Default: birajtiwari.com
+#     Description: Your domain name
+
+#   Region:
+#     Type: String
+#     Default: us-east-1
+#     Description: AWS Region where S3 bucket is located
+
+# Resources:
+#   # Create Route 53 Hosted Zone
+#   HostedZone:
+#     Type: AWS::Route53::HostedZone
+#     Properties:
+#       Name: !Ref DomainName
+#       HostedZoneConfig:
+#         Comment: Hosted zone for birajtiwari.com website
+
+#   # DNS Record for www subdomain
+#   WwwRecord:
+#     Type: AWS::Route53::RecordSet
+#     Properties:
+#       HostedZoneId: !Ref HostedZone
+#       Name: !Sub www.${DomainName}
+#       Type: A
+#       AliasTarget:
+#         # S3 website endpoint for us-east-1
+#         DNSName: s3-website-us-east-1.amazonaws.com
+#         # Static hosted zone ID for S3 website endpoints in us-east-1
+#         HostedZoneId: Z3AQBSTGFYJSTF
+#         EvaluateTargetHealth: false
+
+#   # DNS Record for apex domain (optional)
+#   ApexRecord:
+#     Type: AWS::Route53::RecordSet
+#     Properties:
+#       HostedZoneId: !Ref HostedZone
+#       Name: !Ref DomainName
+#       Type: A
+#       AliasTarget:
+#         DNSName: s3-website-us-east-1.amazonaws.com
+#         HostedZoneId: Z3AQBSTGFYJSTF
+#         EvaluateTargetHealth: false
+
+# Outputs:
+#   NameServers:
+#     Description: 'Nameservers for your domain'
+#     Value: !Join [', ', !GetAtt HostedZone.NameServers]
+
+#   HostedZoneId:
+#     Description: 'Route 53 Hosted Zone ID'
+#     Value: !Ref HostedZone
