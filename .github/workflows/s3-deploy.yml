@@ -18,12 +18,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true || github.event_name == 'push'
-    defaults:
-      run:
-        working-directory: client
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -46,24 +44,20 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          aws s3 sync . s3://www.birajtiwari.com/client/ \
+          aws s3 sync . s3://www.birajtiwari.com/ \
             --delete \
-            --exclude ".*" \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude "README.md" \
+            --exclude "*.yml" \
             --cache-control "max-age=86400"
 
-      - name: Configure website
+      - name: Set bucket website configuration
         run: |
-          aws s3api put-bucket-website \
-            --bucket www.birajtiwari.com \
-            --website-configuration '{
-              "IndexDocument": {"Suffix": "index.html"},
-              "ErrorDocument": {"Key": "client/index.html"},
-              "RoutingRules": [{
-                "Condition": {
-                  "KeyPrefixEquals": ""
-                },
-                "Redirect": {
-                  "ReplaceKeyWith": "client/index.html"
-                }
-              }]
-            }'
+          aws s3 website s3://www.birajtiwari.com/ \
+            --index-document index.html \
+            --error-document error.html
+
+      - name: Output website URL
+        run: |
+          echo "Website URL: http://www.birajtiwari.com.s3-website-us-east-1.amazonaws.com"
