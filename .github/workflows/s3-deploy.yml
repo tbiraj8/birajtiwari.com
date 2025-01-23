@@ -44,13 +44,12 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          aws s3 sync . s3://www.birajtiwari.com/ \
+          aws s3 sync . s3://www.birajtiwari.com/client \
             --delete \
             --exclude ".git/*" \
             --exclude ".github/*" \
             --exclude "README.md" \
             --exclude "*.yml" \
-            --exclude "s3-bucket-setup.yml" \
             --cache-control "max-age=86400"
 
       - name: Set bucket website configuration
