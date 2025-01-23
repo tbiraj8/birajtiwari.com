@@ -17,6 +17,7 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Only run if the PR is merged or if it's a direct push to main
     if: github.event.pull_request.merged == true || github.event_name == 'push'
     
     steps:
@@ -29,19 +30,6 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
 
-      - name: Check if bucket exists
-        id: check-bucket
-        run: |
-          if ! aws s3api head-bucket --bucket www.birajtiwari.com 2>/dev/null; then
-            echo "Bucket does not exist. Creating..."
-            aws cloudformation deploy \
-              --template-file s3-bucket-setup.yml \
-              --stack-name website-bucket-stack \
-              --capabilities CAPABILITY_IAM
-          else
-            echo "Bucket already exists"
-          fi
-
       - name: Deploy to S3
         run: |
           aws s3 sync . s3://www.birajtiwari.com/ \
@@ -49,15 +37,4 @@ jobs:
             --exclude ".git/*" \
             --exclude ".github/*" \
             --exclude "README.md" \
-            --exclude "s3-bucket-setup.yml" \
             --cache-control "max-age=86400"
-
-      - name: Set bucket website configuration
-        run: |
-          aws s3 website s3://www.birajtiwari.com/ \
-            --index-document index.html \
-            --error-document error.html
-
-      - name: Output website URL
-        run: |
-          echo "Website URL: http://www.birajtiwari.com.s3-website-us-east-1.amazonaws.com"
