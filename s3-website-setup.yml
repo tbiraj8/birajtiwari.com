@@ -8,8 +8,8 @@ Resources:
     Properties:
       BucketName: www.birajtiwari.com
       WebsiteConfiguration:
-        IndexDocument: index.html
-        ErrorDocument: index.html
+        IndexDocument: clientindex.html
+        ErrorDocument: clientindex/index.html
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
         BlockPublicPolicy: false
