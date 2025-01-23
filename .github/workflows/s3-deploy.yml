@@ -44,7 +44,7 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          aws s3 sync client/ s3://www.birajtiwari.com/ \
+          aws s3 sync . s3://www.birajtiwari.com/ \
             --delete \
             --exclude ".git/*" \
             --exclude ".github/*" \
