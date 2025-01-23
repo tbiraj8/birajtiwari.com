@@ -1,0 +1,94 @@
+# AWSTemplateFormatVersion: '2010-09-09'
+# Description: 'CloudFront distribution setup for www.birajtiwari.com'
+
+# Resources:
+#   # SSL Certificate
+#   Certificate:
+#     Type: AWS::CertificateManager::Certificate
+#     Properties:
+#       DomainName: www.birajtiwari.com
+#       ValidationMethod: DNS
+#       SubjectAlternativeNames:
+#         - birajtiwari.com
+
+#   # CloudFront Origin Access Identity
+#   CloudFrontOriginAccessIdentity:
+#     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+#     Properties:
+#       CloudFrontOriginAccessIdentityConfig:
+#         Comment: 'OAI for www.birajtiwari.com'
+
+#   # CloudFront Distribution
+#   CloudFrontDistribution:
+#     Type: AWS::CloudFront::Distribution
+#     Properties:
+#       DistributionConfig:
+#         Enabled: true
+#         DefaultRootObject: ui/index.html
+#         Aliases:
+#           - www.birajtiwari.com
+#           - birajtiwari.com
+#         Origins:
+#           - DomainName: www.birajtiwari.com.s3.amazonaws.com
+#             Id: S3Origin
+#             S3OriginConfig:
+#               OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}'
+#         DefaultCacheBehavior:
+#           TargetOriginId: S3Origin
+#           ViewerProtocolPolicy: redirect-to-https
+#           AllowedMethods:
+#             - GET
+#             - HEAD
+#             - OPTIONS
+#           CachedMethods:
+#             - GET
+#             - HEAD
+#             - OPTIONS
+#           Compress: true
+#           DefaultTTL: 86400
+#           MinTTL: 0
+#           MaxTTL: 31536000
+#           ForwardedValues:
+#             QueryString: false
+#             Cookies:
+#               Forward: none
+#         PriceClass: PriceClass_100
+#         ViewerCertificate:
+#           AcmCertificateArn: !Ref Certificate
+#           SslSupportMethod: sni-only
+#           MinimumProtocolVersion: TLSv1.2_2021
+#         HttpVersion: http2
+#         CustomErrorResponses:
+#           - ErrorCode: 403
+#             ResponsePagePath: /ui/index.html
+#             ResponseCode: 200
+#             ErrorCachingMinTTL: 300
+#           - ErrorCode: 404
+#             ResponsePagePath: /ui/index.html
+#             ResponseCode: 200
+#             ErrorCachingMinTTL: 300
+
+#   # Update S3 Bucket Policy for CloudFront Access
+#   BucketPolicy:
+#     Type: AWS::S3::BucketPolicy
+#     Properties:
+#       Bucket: www.birajtiwari.com
+#       PolicyDocument:
+#         Version: '2012-10-17'
+#         Statement:
+#           - Effect: Allow
+#             Principal:
+#               AWS: !Sub 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}'
+#             Action: 's3:GetObject'
+#             Resource: 'arn:aws:s3:::www.birajtiwari.com/*'
+
+# Outputs:
+#   DistributionId:
+#     Description: CloudFront Distribution ID
+#     Value: !Ref CloudFrontDistribution
+#   DistributionDomainName:
+#     Description: CloudFront Distribution Domain Name
+#     Value: !GetAtt CloudFrontDistribution.DomainName
+#   CertificateArn:
+#     Description: SSL Certificate ARN
+#     Value: !Ref Certificate
