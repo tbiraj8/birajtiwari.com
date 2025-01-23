@@ -38,7 +38,7 @@ Resources:
                 HeaderValue: !Sub '${AWS::StackName}-${AWS::Region}'
         Enabled: true
         HttpVersion: http2
-        DefaultRootObject: ui/index.html
+        DefaultRootObject: client/index.html
         DefaultCacheBehavior:
           AllowedMethods:
             - GET

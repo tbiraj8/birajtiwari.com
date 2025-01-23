@@ -24,7 +24,7 @@
 #     Properties:
 #       DistributionConfig:
 #         Enabled: true
-#         DefaultRootObject: ui/index.html
+#         DefaultRootObject: client/index.html
 #         Aliases:
 #           - www.birajtiwari.com
 #           - birajtiwari.com
@@ -60,11 +60,11 @@
 #         HttpVersion: http2
 #         CustomErrorResponses:
 #           - ErrorCode: 403
-#             ResponsePagePath: /ui/index.html
+#             ResponsePagePath: /client/index.html
 #             ResponseCode: 200
 #             ErrorCachingMinTTL: 300
 #           - ErrorCode: 404
-#             ResponsePagePath: /ui/index.html
+#             ResponsePagePath: /client/index.html
 #             ResponseCode: 200
 #             ErrorCachingMinTTL: 300
 
