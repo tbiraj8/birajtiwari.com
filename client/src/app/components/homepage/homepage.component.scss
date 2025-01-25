@@ -1,0 +1,44 @@
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: white;
+  }
+  
+  .hero-section h1 {
+    font-weight: bold;
+  }
+  
+  .hero-section .btn {
+    margin-top: 20px;
+  }
+  
+  /* About Section */
+  .about-section img {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  /* Skills Section */
+  .skills-section i {
+    color: #2575fc;
+  }
+  
+  /* Timeline */
+  .timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .timeline-item {
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Contact Section */
+  .contact-section .btn {
+    width: 100%;
+  }

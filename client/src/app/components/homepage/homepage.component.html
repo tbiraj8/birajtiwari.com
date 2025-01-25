@@ -1,26 +1,98 @@
-<div class="container mx-auto px-4 py-8">
-    <div class="text-center mb-8">
-      <h1 class="text-4xl font-bold mb-2">BIRAJ TIWARI</h1>
-      <div class="flex justify-center gap-4">
-        <a href="mailto:tiwaribiraj8@gmail.com" class="hover:text-blue-600">tiwaribiraj8</a>
-        <span>(505)-363-3960</span>
-        <a href="https://www.linkedin.com/in/tbiraj/" target="_blank" class="hover:text-blue-600">LinkedIn</a>
+<div class="homepage-container">
+    <!-- Hero Section -->
+    <section class="hero-section text-center py-5">
+      <div class="container">
+        <h1 class="display-4">Welcome to My Portfolio</h1>
+        <p class="lead">Innovative Software Engineer | Cloud Enthusiast | Problem Solver</p>
+        <a href="#about" class="btn btn-primary btn-lg">Learn More</a>
       </div>
-    </div>
+    </section>
   
-    <div class="mb-8">
-      <h2 class="text-2xl font-bold mb-4">Experience</h2>
-      <!-- Vanguard -->
-      <div class="mb-6">
-        <div class="flex justify-between mb-2">
-          <h3 class="text-xl font-semibold">Vanguard Group, Software Engineer</h3>
-          <span>Jan. 2023 - Current</span>
+    <!-- About Section -->
+    <section id="about" class="about-section py-5">
+      <div class="container">
+        <h2 class="text-center mb-4">About Me</h2>
+        <div class="row">
+          <div class="col-md-6">
+            <img src="assets/profile.jpg" alt="Profile Picture" class="img-fluid rounded-circle">
+          </div>
+          <div class="col-md-6">
+            <p class="lead">
+              Hi, I'm Biraj Tiwari, a passionate Software Engineer with expertise in cloud-native applications, microservices, and modern SRE practices. I have a proven track record of delivering scalable and secure solutions for high-volume systems.
+            </p>
+            <a href="https://www.linkedin.com/in/biraj/" target="_blank" class="btn btn-outline-primary">
+              <i class="fab fa-linkedin"></i> Connect on LinkedIn
+            </a>
+          </div>
         </div>
-        <p class="mb-2">Malvern, PA</p>
-        <!-- Add Vanguard experience points -->
       </div>
-      <!-- Add Caterpillar and CYFD sections similarly -->
-    </div>
+    </section>
   
-    <!-- Add Skills and Education sections -->
+    <!-- Skills Section -->
+    <section class="skills-section py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-4">Skills</h2>
+        <div class="row">
+          <div class="col-md-4 text-center">
+            <i class="fas fa-code fa-3x mb-3"></i>
+            <h4>Programming Languages</h4>
+            <p>Java, TypeScript/JavaScript, Python, SQL, UNIX Script</p>
+          </div>
+          <div class="col-md-4 text-center">
+            <i class="fas fa-cloud fa-3x mb-3"></i>
+            <h4>Cloud & SRE Tools</h4>
+            <p>AWS, Docker, Datadog, Splunk, Honeycomb</p>
+          </div>
+          <div class="col-md-4 text-center">
+            <i class="fas fa-tools fa-3x mb-3"></i>
+            <h4>Frameworks & Libraries</h4>
+            <p>Spring/Spring Boot, Angular, Numpy/Pandas/Matplotlib</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  
+    <!-- Experience Section -->
+    <section class="experience-section py-5">
+      <div class="container">
+        <h2 class="text-center mb-4">Experience</h2>
+        <div class="timeline">
+          <div class="timeline-item">
+            <h4>Vanguard Group</h4>
+            <p class="text-muted">Software Engineer | Jan. 2023 - Current</p>
+            <ul>
+              <li>Developed and secured end-to-end trade processing for institutional clients.</li>
+              <li>Leveraged AWS to build scalable microservices architecture.</li>
+            </ul>
+          </div>
+          <div class="timeline-item">
+            <h4>Caterpillar Inc.</h4>
+            <p class="text-muted">Software Engineer | June 2021 - Nov. 2022</p>
+            <ul>
+              <li>Spearheaded the development of a Battery as a Service (BaaS) web application.</li>
+              <li>Built a responsive client-side interface using Angular.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  
+    <!-- Contact Section -->
+    <section class="contact-section py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-4">Get in Touch</h2>
+        <form>
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Your Name">
+          </div>
+          <div class="form-group">
+            <input type="email" class="form-control" placeholder="Your Email">
+          </div>
+          <div class="form-group">
+            <textarea class="form-control" rows="5" placeholder="Your Message"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
+      </div>
+    </section>
   </div>
