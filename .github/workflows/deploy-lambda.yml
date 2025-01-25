@@ -46,7 +46,7 @@ jobs:
 
     - name: Deploy to Lambda
       run: |
-        FUNCTION_NAME=$(echo "${{ secrets.AWS_ROLE_ARN }}" | cut -d'/' -f2)
+        FUNCTION_NAME=$(echo "${{ secrets.AWS_ROLE_ARN }}" | cut -d'/' -f2 | tr '.' '_')
         aws lambda update-function-code \
-          --function-name ${FUNCTION_NAME}-api-handler \
+          --function-name "${FUNCTION_NAME}_api_handler" \
           --zip-file fileb://lambda.zip
