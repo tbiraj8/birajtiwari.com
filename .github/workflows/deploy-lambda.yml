@@ -2,9 +2,12 @@ name: Deploy Lambda
 
 on:
   push:
-    branches: [ main ]
+    branches: 
+      - main
+      - master
     paths:
       - 'server/**'
+      - '.github/workflows/**'
 
 permissions:
   id-token: write
