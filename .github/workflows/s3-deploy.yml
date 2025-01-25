@@ -1,88 +1,11 @@
-# name: Deploy Angular to S3
-
-# on:
-#   push:
-#     branches:
-#       - main
-#   pull_request:
-#     types:
-#       - closed
-#     branches:
-#       - main
-
-# permissions:
-#   id-token: write
-#   contents: read
-
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
-#     if: github.event.pull_request.merged == true || github.event_name == 'push'
-    
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v4
-
-#       - name: Setup Node.js
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: '20'
-#           cache: 'npm'
-
-#       - name: Install dependencies
-#         run: npm ci
-
-#       - name: Build Angular project
-#         run: npm run build --configuration=production
-
-#       - name: Configure AWS credentials
-#         uses: aws-actions/configure-aws-credentials@v4
-#         with:
-#           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-#           aws-region: us-east-1
-
-#       - name: Check if bucket exists
-#         id: check-bucket
-#         run: |
-#           if ! aws s3api head-bucket --bucket www.birajtiwari.com 2>/dev/null; then
-#             echo "Bucket does not exist. Creating..."
-#             aws cloudformation deploy \
-#               --template-file s3-bucket-setup.yml \
-#               --stack-name website-bucket-stack \
-#               --capabilities CAPABILITY_IAM
-#           else
-#             echo "Bucket already exists"
-#           fi
-
-#       - name: Deploy to S3
-#         run: |
-#           aws s3 sync dist/*/. s3://www.birajtiwari.com/ \
-#             --delete \
-#             --cache-control "max-age=31536000,public" \
-#             --exclude "index.html"
-
-#       - name: Upload index.html with no caching
-#         run: |
-#           aws s3 cp dist/*/index.html s3://www.birajtiwari.com/index.html \
-#             --cache-control "no-cache,no-store,must-revalidate" \
-#             --content-type "text/html"
-
-#       - name: Set bucket website configuration
-#         run: |
-#           aws s3 website s3://www.birajtiwari.com/ \
-#             --index-document index.html \
-#             --error-document index.html
 name: Deploy Angular to S3
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    types:
-      - closed
-    branches:
-      - main
+    types: [closed]
+    branches: [main]
 
 permissions:
   id-token: write
@@ -94,11 +17,9 @@ jobs:
     if: github.event.pull_request.merged == true || github.event_name == 'push'
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
@@ -112,17 +33,27 @@ jobs:
         working-directory: ./client
         run: npm run build --configuration=production
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
 
+      - name: Check if bucket exists
+        id: check-bucket
+        run: |
+          if ! aws s3api head-bucket --bucket www.birajtiwari.com 2>/dev/null; then
+            aws cloudformation deploy \
+              --template-file s3-bucket-setup.yml \
+              --stack-name website-bucket-stack \
+              --capabilities CAPABILITY_IAM
+          fi
+
       - name: Deploy to S3
         run: |
-          aws s3 sync client/dist/*/. s3://www.birajtiwari.com/ \
-            --delete
+          aws s3 sync client/dist/client/browser/. s3://www.birajtiwari.com/ --delete
 
-      - name: Output website URL
+      - name: Configure website
         run: |
-          echo "Website URL: http://www.birajtiwari.com.s3-website-us-east-1.amazonaws.com"
+          aws s3 website s3://www.birajtiwari.com/ \
+            --index-document index.html \
+            --error-document index.html
