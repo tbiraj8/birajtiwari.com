@@ -42,3 +42,37 @@
   .contact-section .btn {
     width: 100%;
   }
+
+.hero-section {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+  padding: 150px 0;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.progress {
+    height: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .progress-bar {
+    background-color: #2575fc;
+    transition: width 2s ease-in-out;
+  }
+
+  .footer-section {
+    background: #343a40;
+  }
+  
+  .social-links a {
+    font-size: 24px;
+    transition: color 0.3s ease;
+  }
+  
+  .social-links a:hover {
+    color: #2575fc !important;
+  }
