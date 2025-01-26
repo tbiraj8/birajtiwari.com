@@ -1,46 +1,89 @@
-name: Deploy Lambda
+# AWSTemplateFormatVersion: '2010-09-09'
+# Description: 'API Gateway with Python Lambda integration'
 
-on:
-  push:
-    branches: [main, master]
-    paths:
-      - 'server/**'
-      - '.github/workflows/**'
+# Resources:
+#   LambdaFunction:
+#     Type: 'AWS::Lambda::Function'
+#     DependsOn: LambdaExecutionRole
+#     Properties:
+#       FunctionName: !Sub ${AWS::StackName}-api-handler
+#       Runtime: python3.9
+#       Handler: index.handler
+#       Code:
+#         ZipFile: |
+#           def handler(event, context):
+#               return {
+#                   'statusCode': 200,
+#                   'body': 'Hello from Lambda!'
+#               }
+#       Role: !GetAtt LambdaExecutionRole.Arn
+#       Timeout: 30
+#       MemorySize: 128
 
-permissions:
-  id-token: write
-  contents: read
+#   LambdaExecutionRole:
+#     Type: 'AWS::IAM::Role'
+#     Properties:
+#       RoleName: !Sub ${AWS::StackName}-lambda-role
+#       AssumeRolePolicyDocument:
+#         Version: '2012-10-17'
+#         Statement:
+#           - Effect: Allow
+#             Principal:
+#               Service: lambda.amazonaws.com
+#             Action: sts:AssumeRole
+#       ManagedPolicyArns:
+#         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: server
+#   ApiGateway:
+#     Type: 'AWS::ApiGateway::RestApi'
+#     Properties:
+#       Name: !Sub ${AWS::StackName}-api
+#       Description: API Gateway for Lambda integration
 
-    steps:
-    - uses: actions/checkout@v4
+#   ApiResource:
+#     Type: 'AWS::ApiGateway::Resource'
+#     Properties:
+#       RestApiId: !Ref ApiGateway
+#       ParentId: !GetAtt ApiGateway.RootResourceId
+#       PathPart: 'items'
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+#   ApiMethod:
+#     Type: 'AWS::ApiGateway::Method'
+#     Properties:
+#       RestApiId: !Ref ApiGateway
+#       ResourceId: !Ref ApiResource
+#       HttpMethod: POST
+#       AuthorizationType: NONE
+#       Integration:
+#         Type: AWS_PROXY
+#         IntegrationHttpMethod: POST
+#         Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-        aws-region: 'us-east-1'
-        audience: sts.amazonaws.com
+#   LambdaPermission:
+#     Type: 'AWS::Lambda::Permission'
+#     Properties:
+#       Action: lambda:InvokeFunction
+#       FunctionName: !Ref LambdaFunction
+#       Principal: apigateway.amazonaws.com
+#       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGateway}/*/POST/items
 
-    - name: Package Lambda
-      run: |
-        zip -r lambda.zip ./*
+#   ApiDeployment:
+#     Type: 'AWS::ApiGateway::Deployment'
+#     DependsOn: ApiMethod
+#     Properties:
+#       RestApiId: !Ref ApiGateway
 
-    - name: Deploy to Lambda
-      run: |
-        STACK_NAME="lambda-api-stack-first"  # Replace with your stack name
-        FUNCTION_NAME=$(aws cloudformation describe-stacks --stack-name ${STACK_NAME} --query 'Stacks[0].Outputs[?OutputKey==`FunctionName`].OutputValue' --output text)
-        aws lambda update-function-code \
-          --function-name ${FUNCTION_NAME} \
-          --zip-file fileb://lambda.zip
+#   ApiStage:
+#     Type: 'AWS::ApiGateway::Stage'
+#     Properties:
+#       DeploymentId: !Ref ApiDeployment
+#       RestApiId: !Ref ApiGateway
+#       StageName: prod
+
+# Outputs:
+#   ApiEndpoint:
+#     Description: API Endpoint URL
+#     Value: !Sub https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/items
+#   LambdaFunction:
+#     Description: Lambda Function Name
+#     Value: !Ref LambdaFunction
