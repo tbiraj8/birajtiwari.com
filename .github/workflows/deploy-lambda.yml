@@ -1,12 +1,11 @@
-name: Deploy CloudFormation
+name: Deploy Lambda
 
 on:
   push:
-    branches: 
-      - main
-      - master
+    branches: [main, master]
     paths:
-      - 'cloudformation.yml'
+      - 'server/**'
+      - '.github/workflows/**'
 
 permissions:
   id-token: write
@@ -15,6 +14,10 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+
     steps:
     - uses: actions/checkout@v4
 
@@ -23,12 +26,14 @@ jobs:
       with:
         role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
         aws-region: 'us-east-1'
-        audience: 'sts.amazonaws.com'
+        audience: sts.amazonaws.com
 
-    - name: Deploy CloudFormation Stack
+    - name: Package Lambda
       run: |
-        aws cloudformation deploy \
-          --template-file cloudformation.yml \
-          --stack-name lambda-api-stack \
-          --capabilities CAPABILITY_IAM \
-          --no-fail-on-empty-changeset
+        zip -r lambda.zip ./*
+
+    - name: Deploy to Lambda
+      run: |
+        aws lambda update-function-code \
+          --function-name lambda-api-stack-api-handler \
+          --zip-file fileb://lambda.zip
