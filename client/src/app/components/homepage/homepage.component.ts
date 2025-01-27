@@ -21,22 +21,11 @@ export class HomepageComponent {
   constructor(private apiService: ApiService) {}
 
   async onSubmit() {
-    this.isLoading = true;
     try {
-      const response = await this.apiService.callApi(this.formData);
-      console.log('Message sent:', response);
-      // Reset form
-      this.formData = {
-        name: '',
-        email: '',
-        message: ''
-      };
-      alert('Message sent successfully!');
+      await this.apiService.callApi(this.formData);
+      this.formData = { name: '', email: '', message: '' };
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to send message.');
-    } finally {
-      this.isLoading = false;
     }
   }
 }
