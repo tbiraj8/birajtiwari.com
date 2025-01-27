@@ -6,15 +6,9 @@ import axios from 'axios';
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'https://ezycty5pv8.execute-api.us-east-1.amazonaws.com/prod/items';
+  private apiUrl = 'https://dh5yl59v4a.execute-api.us-east-1.amazonaws.com/prod/contact';
 
-  async callApi(data?: any) {
-    try {
-      const response = await axios.post(this.apiUrl, data);
-      return response.data;
-    } catch (error) {
-      console.error('API Error:', error);
-      throw error;
-    }
+  async callApi(data: any) {
+    return await axios.post(this.apiUrl, data);
   }
 }

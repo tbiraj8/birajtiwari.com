@@ -39,5 +39,5 @@ jobs:
     - name: Deploy to Lambda
       run: |
         aws lambda update-function-code \
-          --function-name lambda-api-stack-api-handler \
+          --function-name contact-form-handler \
           --zip-file fileb://lambda.zip
