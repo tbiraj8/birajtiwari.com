@@ -48,7 +48,7 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          aws s3 sync dist/browser/. s3://www.birajtiwari.com/ --delete
+          aws s3 sync dist/client/browser/. s3://www.birajtiwari.com/ --delete
 
       - name: Configure website
         run: |
