@@ -20,7 +20,6 @@ def handler(event, context):
 
     try:
         body = json.loads(event['body'])
-        
         item = {
             'id': str(uuid.uuid4()),
             'name': body.get('name'),
@@ -28,9 +27,7 @@ def handler(event, context):
             'message': body.get('message'),
             'timestamp': datetime.now().isoformat()
         }
-        
         table.put_item(Item=item)
-        
         return {
             "statusCode": 200,
             "headers": {
@@ -43,7 +40,6 @@ def handler(event, context):
             })
         }
     except Exception as e:
-        print(f'Error: {str(e)}')
         return {
             "statusCode": 500,
             "headers": {

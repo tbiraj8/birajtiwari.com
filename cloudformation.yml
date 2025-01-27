@@ -1,12 +1,23 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'API Gateway with Python Lambda integration'
+Description: 'Contact Form Infrastructure'
 
 Resources:
-  LambdaFunction:
-    Type: 'AWS::Lambda::Function'
-    DependsOn: LambdaExecutionRole
+  ContactTable:
+    Type: AWS::DynamoDB::Table
     Properties:
-      FunctionName: !Sub ${AWS::StackName}-api-handler
+      TableName: ContactFormEntries
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: contact-form-handler
       Runtime: python3.9
       Handler: index.handler
       Code: 
@@ -19,14 +30,13 @@ Resources:
                   },
                   'body': 'Hello from Lambda!'
               }
-      Role: !GetAtt LambdaExecutionRole.Arn
+      Role: !GetAtt LambdaRole.Arn
       Timeout: 30
       MemorySize: 128
 
-  LambdaExecutionRole:
-    Type: 'AWS::IAM::Role'
+  LambdaRole:
+    Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ${AWS::StackName}-lambda-role
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -44,23 +54,22 @@ Resources:
               - Effect: Allow
                 Action:
                   - dynamodb:PutItem
-                Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/ContactFormEntries
+                Resource: !GetAtt ContactTable.Arn
 
   ApiGateway:
-    Type: 'AWS::ApiGateway::RestApi'
+    Type: AWS::ApiGateway::RestApi
     Properties:
-      Name: !Sub ${AWS::StackName}-api
-      Description: API Gateway for Lambda integration
+      Name: ContactFormAPI
 
   ApiResource:
-    Type: 'AWS::ApiGateway::Resource'
+    Type: AWS::ApiGateway::Resource
     Properties:
       RestApiId: !Ref ApiGateway
       ParentId: !GetAtt ApiGateway.RootResourceId
-      PathPart: 'items'
+      PathPart: 'contact'
 
   ApiMethod:
-    Type: 'AWS::ApiGateway::Method'
+    Type: AWS::ApiGateway::Method
     Properties:
       RestApiId: !Ref ApiGateway
       ResourceId: !Ref ApiResource
@@ -72,7 +81,7 @@ Resources:
         Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations
 
   OptionsMethod:
-    Type: 'AWS::ApiGateway::Method'
+    Type: AWS::ApiGateway::Method
     Properties:
       RestApiId: !Ref ApiGateway
       ResourceId: !Ref ApiResource
@@ -97,16 +106,8 @@ Resources:
             method.response.header.Access-Control-Allow-Methods: true
             method.response.header.Access-Control-Allow-Origin: true
 
-  LambdaPermission:
-    Type: 'AWS::Lambda::Permission'
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Ref LambdaFunction
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGateway}/*/POST/items
-
   ApiDeployment:
-    Type: 'AWS::ApiGateway::Deployment'
+    Type: AWS::ApiGateway::Deployment
     DependsOn: 
       - ApiMethod
       - OptionsMethod
@@ -114,16 +115,24 @@ Resources:
       RestApiId: !Ref ApiGateway
 
   ApiStage:
-    Type: 'AWS::ApiGateway::Stage'
+    Type: AWS::ApiGateway::Stage
     Properties:
       DeploymentId: !Ref ApiDeployment
       RestApiId: !Ref ApiGateway
       StageName: prod
 
+  LambdaApiPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref LambdaFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGateway}/*/POST/contact
+
 Outputs:
   ApiEndpoint:
     Description: API Endpoint URL
-    Value: !Sub https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/items
+    Value: !Sub https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/contact
   LambdaFunction:
     Description: Lambda Function Name
     Value: !Ref LambdaFunction
