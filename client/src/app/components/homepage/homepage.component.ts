@@ -1,49 +1,41 @@
-import { Component, OnInit } from '@angular/core';
-import Typewriter from 'typewriter-effect/dist/core'; // Import the library
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../service/api.service';
-import { JsonPipe } from '@angular/common'; // Import JsonPipe
 
 @Component({
   selector: 'app-homepage',
   standalone: true,
-  imports: [JsonPipe], // Add JsonPipe here
+  imports: [FormsModule],
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.css']
 })
-export class HomepageComponent implements OnInit {
-  apiResponse: any; // Variable to store the API response
-  isLoading = false; // Variable to track loading state
-  errorMessage: string | null = null;
+export class HomepageComponent {
+  formData = {
+    name: '',
+    email: '',
+    message: ''
+  };
+  isLoading = false;
+  
   constructor(private apiService: ApiService) {}
-  ngOnInit(): void {
-    const typewriter = new Typewriter('#typewriter', {
-      loop: true,
-      delay: 75,
-    });
 
-    typewriter
-      .typeString('Innovative Software Engineer')
-      .pauseFor(1000)
-      .deleteAll()
-      .typeString('Cloud Enthusiast')
-      .pauseFor(1000)
-      .deleteAll()
-      .typeString('Problem Solver')
-      .pauseFor(1000)
-      .start();
-  }
-  async onButtonClick() {
-    this.isLoading = true; // Show loading state
-    this.errorMessage = null; // Reset error message
-
+  async onSubmit() {
+    this.isLoading = true;
     try {
-      this.apiResponse = await this.apiService.callApi(); // Call the API and store the response
-      console.log('Response from API:', this.apiResponse);
+      const response = await this.apiService.callApi(this.formData);
+      console.log('Message sent:', response);
+      // Reset form
+      this.formData = {
+        name: '',
+        email: '',
+        message: ''
+      };
+      alert('Message sent successfully!');
     } catch (error) {
-      console.error('Error calling API:', error);
-      this.errorMessage = 'Failed to fetch data. Please try again.'; // Set error message
+      console.error('Error:', error);
+      alert('Failed to send message.');
     } finally {
-      this.isLoading = false; // Hide loading state
+      this.isLoading = false;
     }
   }
 }

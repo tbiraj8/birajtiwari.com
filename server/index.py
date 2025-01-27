@@ -1,8 +1,12 @@
 import json
+import boto3
+import uuid
 from datetime import datetime
 
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('ContactFormEntries')
+
 def handler(event, context):
-    # Handle OPTIONS request for CORS preflight
     if event['httpMethod'] == 'OPTIONS':
         return {
             "statusCode": 200,
@@ -14,21 +18,29 @@ def handler(event, context):
             "body": json.dumps({"message": "CORS preflight response"})
         }
 
-    # Handle POST request
     try:
         body = json.loads(event['body'])
-        result = {
-            "message": "Success",
-            "data": body,
-            "timestamp": datetime.now().isoformat()
+        
+        item = {
+            'id': str(uuid.uuid4()),
+            'name': body.get('name'),
+            'email': body.get('email'),
+            'message': body.get('message'),
+            'timestamp': datetime.now().isoformat()
         }
+        
+        table.put_item(Item=item)
+        
         return {
             "statusCode": 200,
             "headers": {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*"
             },
-            "body": json.dumps(result)
+            "body": json.dumps({
+                "message": "Message sent successfully",
+                "data": item
+            })
         }
     except Exception as e:
         print(f'Error: {str(e)}')
