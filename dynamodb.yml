@@ -44,3 +44,4 @@
 #   RoleArn:
 #     Description: Lambda Role ARN
 #     Value: !GetAtt DynamoDBRole.Arn
+
