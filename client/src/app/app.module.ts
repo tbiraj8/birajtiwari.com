@@ -1,10 +1,23 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter, withHashLocation } from '@angular/router';
-import { routes } from './app.routes';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http'; 
+import { FormsModule } from '@angular/forms'; 
+import { RouterModule } from '@angular/router';
+import { AppComponent } from './app.component';
+import { routes } from './app.routes'; 
 
-export const appConfig: ApplicationConfig = {
+@NgModule({
+  declarations: [
+    AppComponent, 
+  ],
+  imports: [
+    BrowserModule,
+    HttpClientModule, 
+    FormsModule, 
+    RouterModule.forRoot(routes, { useHash: true }) 
+  ],
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }), 
-    provideRouter(routes, withHashLocation())
-  ]
-};
+  ],
+  bootstrap: [AppComponent] 
+})
+export class AppModule {}
