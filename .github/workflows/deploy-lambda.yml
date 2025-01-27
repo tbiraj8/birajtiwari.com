@@ -28,6 +28,10 @@ jobs:
         aws-region: 'us-east-1'
         audience: sts.amazonaws.com
 
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt -t .
+
     - name: Package Lambda
       run: |
         zip -r lambda.zip ./*
