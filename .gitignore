@@ -1,1 +1,12 @@
 .DS_Store
+node_modules/
+dist/
+tmp/
+temp/
+coverage/
+.idea/
+.vscode/
+package-lock.json
+environment.*.ts
+/e2e/
+.angular/
